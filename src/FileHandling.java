@@ -11,14 +11,14 @@ public class FileHandling
     }
 
     public static double getFileSizeMb(File file) {
-        if(file.exists() || file.isFile()) {
+        if(file.exists() && file.isFile()) {
             return (double) file.length() / (1024*1024);
         } else {
             return 0;
         }
     }
     public static double getFileSizeKb(File file) {
-        if(file.exists() || file.isFile()) {
+        if(file.exists() && file.isFile()) {
             return (double) file.length();
         } else {
             return 0;
@@ -28,7 +28,6 @@ public class FileHandling
         try {
             FileWriter writer = new FileWriter(path);
             writer.write(data);
-            //System.out.println("Wrote to file!");
             writer.close();
         } catch (IOException e) {
             e.printStackTrace();

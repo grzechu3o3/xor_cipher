@@ -5,13 +5,14 @@ class Gui extends JFrame {
     public static void main(String[] args) {
         JFrame frame = new JFrame("Szyfrowanie plików");
 
+        // Sprawdza czy argument istnieje
         if(args.length != 1) {
-            System.out.println("Brak sciezki do zaszyfrowania! Powinna byc argumentem programu");
+            JOptionPane.showMessageDialog(null, "Brak scieżki do zaszyfrowania! Powinna być argumentem programu!", "Błąd", JOptionPane.ERROR_MESSAGE);
             System.exit(1);
         }
 
+        // Tworzy listę plików w zadanym folderze
         File[] files = FileHandling.listFolder(new File(args[0]));
-        System.out.println(args[0]);
 
         int file_count = files.length;
         int thread_count = 4;
@@ -34,6 +35,9 @@ class Gui extends JFrame {
 
         p.add(duzy);
 
+
+        Thread[] threads = new Thread[thread_count];
+
         start.addActionListener(e -> {
             for(int i=0; i<thread_count; i++) {
                 int start_i = i * files_per_one_thread;
@@ -44,8 +48,8 @@ class Gui extends JFrame {
 
                 int finalI = i;
 
-                new Thread(() -> updateProgress(progressBars[finalI], thread_files)).start();
 
+                threads[i] = updateProgress(progressBars[finalI], thread_files);
 
             }
 
@@ -59,24 +63,39 @@ class Gui extends JFrame {
 
                 }
             }).start();
+
+
+            new Thread(() -> {
+                try {
+                    for(Thread t : threads) {
+                        t.join();
+                    }
+                    SwingUtilities.invokeLater(() -> {
+                        JOptionPane.showMessageDialog(null, "Szyfrowanie zakończone!", "Informacja", JOptionPane.INFORMATION_MESSAGE);
+                    });
+                } catch (InterruptedException ie) {
+                    ie.printStackTrace();
+                }
+            }).start();
+
+
         });
 
         frame.add(p);
 
-        frame.setSize(800,600);
+        frame.setSize(800,320);
         frame.setVisible(true);
         frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
     }
 
-    public static void updateProgress(JProgressBar progressBar, File[] files) {
+    public static Thread updateProgress(JProgressBar progressBar, File[] files) {
         try {
             Thread thread = new Thread(new Cipher(files, progressBar));
-            System.out.println(thread.getName());
             thread.start();
-            thread.join();
+            return thread;
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+        return Thread.currentThread();
     }
 }

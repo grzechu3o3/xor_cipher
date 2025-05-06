@@ -21,7 +21,9 @@ public class Cipher implements Runnable {
             for(int i=0; i<data.length();i++) {
                 cipherData.append((char)(data.charAt(i)^key));
 
-                progressBar.setValue((i+1)*100 / data.length());
+                final int progress = (i + 1) * 100 / data.length();
+                progressBar.setValue(progress);
+
             }
             FileHandling.writeFile(f, String.valueOf(cipherData));
         }
