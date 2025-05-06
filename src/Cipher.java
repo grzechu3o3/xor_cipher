@@ -19,6 +19,7 @@ public class Cipher implements Runnable {
         for(File f : files) {
             String data = FileHandling.readFile(f);
             StringBuilder cipherData = new StringBuilder();
+
             int key = 9;
 
             for(int i=0; i<data.length();i++) {
@@ -26,7 +27,6 @@ public class Cipher implements Runnable {
 
                 final int progress = (i + 1) * 100 / data.length();
                 progressBar.setValue(progress);
-
             }
             FileHandling.writeFile(f, String.valueOf(cipherData));
 

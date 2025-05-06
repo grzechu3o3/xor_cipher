@@ -1,4 +1,5 @@
 import javax.swing.*;
+import java.awt.*;
 import java.io.File;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -17,30 +18,38 @@ class Gui extends JFrame {
         // Tworzy listę plików w zadanym folderze
         File[] files = FileHandling.listFolder(new File(args[0]));
 
+        // Liczy ilość plików do przydzielenia
         int file_count = files.length;
         int thread_count = 4;
         int files_per_one_thread = (int) Math.ceil((double)file_count / thread_count);
-        System.out.println(files_per_one_thread);
+
 
         JPanel p = new JPanel();
-
-        JProgressBar duzy = new JProgressBar(0,100);
+        p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
+        p.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         JProgressBar[] progressBars = new JProgressBar[thread_count];
         for (int i = 0; i < thread_count; i++) {
             progressBars[i] = new JProgressBar(0, 100);
+            progressBars[i].setStringPainted(true);
+            progressBars[i].setAlignmentX(Component.CENTER_ALIGNMENT);
+            progressBars[i].setForeground(new Color(16,197,0));
+
             p.add(progressBars[i]);
+            p.add(Box.createRigidArea(new Dimension(0, 5)));
         }
-
-
         JButton start = new JButton("Start");
+        start.setAlignmentX(Component.CENTER_ALIGNMENT);
         p.add(start);
+        p.add(Box.createRigidArea(new Dimension(0, 5)));
 
+        JProgressBar duzy = new JProgressBar(0,100);
+        duzy.setStringPainted(true);
+        duzy.setForeground(Color.RED);
         p.add(duzy);
 
 
         Thread[] threads = new Thread[thread_count];
-
         start.addActionListener(e -> {
             for(int i=0; i<thread_count; i++) {
                 int start_i = i * files_per_one_thread;
@@ -49,12 +58,10 @@ class Gui extends JFrame {
                 File[] thread_files = new File[end-start_i];
                 System.arraycopy(files, start_i, thread_files, 0, end-start_i);
 
-                int finalI = i;
-
-                threads[i] = updateProgress(progressBars[finalI], thread_files);
-
+                threads[i] = updateProgress(progressBars[i], thread_files);
             }
 
+            // Wątek do kontroli "dużego" progress bara
             new Thread(() -> {
                 while(true) {
                     int processed = processedCount.get();
@@ -63,6 +70,7 @@ class Gui extends JFrame {
                 }
             }).start();
 
+            // Wątek czekający na wykonanie i wyświetlający komunikat
             new Thread(() -> {
                 try {
                     for(Thread t : threads) {
@@ -75,13 +83,11 @@ class Gui extends JFrame {
                     ie.printStackTrace();
                 }
             }).start();
-
-
         });
 
-        frame.add(p);
 
-        frame.setSize(800,320);
+        frame.add(p);
+        frame.setSize(480,240);
         frame.setVisible(true);
         frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
     }
