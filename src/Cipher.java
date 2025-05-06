@@ -1,13 +1,16 @@
 import javax.swing.*;
 import java.io.File;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Cipher implements Runnable {
     private final File[] files;
     private final JProgressBar progressBar;
+    private final AtomicInteger processedCount;
 
-    public Cipher(File[] files, JProgressBar progressBar) {
+    public Cipher(File[] files, JProgressBar progressBar, AtomicInteger pC) {
         this.files = files;
         this.progressBar = progressBar;
+        this.processedCount = pC;
         this.progressBar.setValue(0);
     }
 
@@ -26,6 +29,8 @@ public class Cipher implements Runnable {
 
             }
             FileHandling.writeFile(f, String.valueOf(cipherData));
+
+            processedCount.incrementAndGet();
         }
     }
 }

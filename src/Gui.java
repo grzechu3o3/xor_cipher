@@ -1,7 +1,10 @@
 import javax.swing.*;
 import java.io.File;
+import java.util.concurrent.atomic.AtomicInteger;
 
 class Gui extends JFrame {
+    private static AtomicInteger processedCount = new AtomicInteger(0);
+
     public static void main(String[] args) {
         JFrame frame = new JFrame("Szyfrowanie plików");
 
@@ -48,22 +51,17 @@ class Gui extends JFrame {
 
                 int finalI = i;
 
-
                 threads[i] = updateProgress(progressBars[finalI], thread_files);
 
             }
 
             new Thread(() -> {
                 while(true) {
-                    int total = 0;
-                    for(JProgressBar prg : progressBars) {
-                        total += prg.getValue();
-                    }
-                    duzy.setValue(total/thread_count);
-
+                    int processed = processedCount.get();
+                    int progress = (int) ((processed / (double) file_count) * 100);
+                    duzy.setValue(progress);
                 }
             }).start();
-
 
             new Thread(() -> {
                 try {
@@ -90,7 +88,7 @@ class Gui extends JFrame {
 
     public static Thread updateProgress(JProgressBar progressBar, File[] files) {
         try {
-            Thread thread = new Thread(new Cipher(files, progressBar));
+            Thread thread = new Thread(new Cipher(files, progressBar, processedCount));
             thread.start();
             return thread;
         } catch (Exception e) {
