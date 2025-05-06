@@ -85,8 +85,16 @@ class Gui extends JFrame {
             }).start();
         });
 
+        // Informacje o autorze
+        JPanel statusBar = new JPanel(new BorderLayout());
+        statusBar.setBorder(BorderFactory.createEtchedBorder());
+        JLabel status = new JLabel("2025 Jakub Grzesik");
+        status.setHorizontalAlignment(SwingConstants.LEFT);
+        status.setBorder(BorderFactory.createEmptyBorder(2,5,2,5));
+        statusBar.add(status);
 
         frame.add(p);
+        frame.add(statusBar, BorderLayout.SOUTH);
         frame.setSize(480,240);
         frame.setVisible(true);
         frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
