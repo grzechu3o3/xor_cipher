@@ -96,6 +96,7 @@ class Gui extends JFrame {
         frame.add(p);
         frame.add(statusBar, BorderLayout.SOUTH);
         frame.setSize(480,240);
+        frame.setResizable(false);
         frame.setVisible(true);
         frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
     }
