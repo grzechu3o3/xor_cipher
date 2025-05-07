@@ -51,6 +51,9 @@ class Gui extends JFrame {
 
         Thread[] threads = new Thread[thread_count];
         start.addActionListener(e -> {
+            duzy.setValue(0);
+            processedCount.set(0);
+            
             for(int i=0; i<thread_count; i++) {
                 int start_i = i * files_per_one_thread;
                 int end = Math.min(start_i+files_per_one_thread, file_count);
